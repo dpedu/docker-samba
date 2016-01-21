@@ -1,0 +1,6 @@
+[tmp]
+        path = /tmp
+        valid users = dave
+        guest ok = no
+        writeable = yes
+        create mask = 0775

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+trap 'kill $(jobs -p)' EXIT
+
+# append shares to smb conf
+cat /shares.txt >> /etc/samba/smb.conf
+
+supervisord &
+
+sleep 5
+
+cat /users.txt | while read line ; do
+    USER=$(echo $line | cut -d ':' -f 1)
+    PASS=$(echo $line | cut -d ':' -f 2)
+    useradd "$USER"
+    usermod -aG smbusers "$USER"
+    (echo "$PASS" ; echo "$PASS") | smbpasswd -s -a "$USER"
+done
+
+echo "Waiting for $(jobs -p)..."
+
+wait $(jobs -p)
